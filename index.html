@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daene and Sheamy's Wedding</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/turn.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background: url('files/BG.png') repeat;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #container {
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            max-width: 100vw;
+            height: 100vh;
+            margin: (5%, 5%, 5%, 5%);  
+        }
+
+        #flipbook {
+            width: 90vw;
+            height: 85vh;
+            max-width: 850px;
+            max-height: 700px;
+            margin: 0 auto;
+        }
+
+        .page {
+            width: 45vw;
+            height: 85vh;
+            max-width: 400px;
+            max-height: 700px;
+        }
+
+        .page img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            line-height: 50px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        #prevPage { left: 10px; }
+        #nextPage { right: 10px; }
+
+        #audioControl {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(0, 0, 0, 0.35);
+            color: white;
+            padding: 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 20;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="flipbook"></div>
+        <div id="prevPage" class="nav-button">&#9664;</div>
+        <div id="nextPage" class="nav-button">&#9654;</div>
+        <div id="audioControl">🔊</div>
+    </div>
+
+    <audio id="bgm" loop autoplay>
+        <source src="files/bgm.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        $(document).ready(function () {
+            const totalPages = 9;
+            const flipbook = $('#flipbook');
+            
+            flipbook.append('<div class="page"><img src="files/1.png" alt="Cover"></div>');
+            for (let i = 2; i <= totalPages; i += 2) {
+                if (i + 1 <= totalPages) {
+                    flipbook.append(`<div class="page"><img src="files/${i}.png" alt="Page ${i}"></div><div class="page"><img src="files/${i+1}.png" alt="Page ${i+1}"></div>`);
+                } else {
+                    flipbook.append(`<div class="page"><img src="files/${i}.png" alt="Page ${i}"></div>`);
+                }
+            }
+            
+            setTimeout(() => {
+                flipbook.turn({
+                    width: Math.min(window.innerWidth * 0.9, 800),
+                    height: Math.min(window.innerHeight * 0.85, 700),
+                    autoCenter: true,
+                    display: 'double',
+                    acceleration: true,
+                    gradients: true,
+                });
+            }, 500);
+
+            $('#prevPage').click(() => flipbook.turn('previous'));
+            $('#nextPage').click(() => flipbook.turn('next'));
+
+            $(document).keydown(e => {
+                if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+                    flipbook.turn('next');
+                } else if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+                    flipbook.turn('previous');
+                }
+            });
+
+            let audio = document.getElementById('bgm');
+            let audioControl = document.getElementById('audioControl');
+            audio.play();
+            audioControl.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play();
+                    audioControl.textContent = '🔊';
+                } else {
+                    audio.pause();
+                    audioControl.textContent = '🔇';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
